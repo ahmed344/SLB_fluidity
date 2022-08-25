@@ -26,7 +26,9 @@ class IntensityCurve():
         
         # Apply the fitting 
         (B, Io_t, Ib_t), _ = curve_fit(IntensityCurve.intensity_time, self.t, self.It,
-                                       p0=(0, self.It.max(), self.It.max()/3))
+                                       p0=(0.05, self.It.max()-self.It.min(), self.It.min()),
+                                       bounds=([0.001, 0, 0],[1, self.It.max()*2, self.It.min()*3]))
+        
         if show == True: print(f'Intensity equation of time:\nIo = {Io_t:.3f}\nIb = {Ib_t:.3f}\nB = {B:.3f}\n')
         
         # Intesity of the rectangle as a function of space from the edge
@@ -34,8 +36,9 @@ class IntensityCurve():
             return Io * np.exp(-x*np.sqrt(B/D)) + Ib
         
         (D, Io_x, Ib_x), _ = curve_fit(intensity_space, self.x, self.Ix,
-                                       p0=(1, self.It.max(),self.It.max()/3),
-                                       bounds=([1e-100,0,0],[np.inf, np.inf, np.inf]))
+                                       p0=(1, self.Ix.max()-self.Ix.min(), self.Ix.min()),
+                                       bounds=([0.01, 0, 0],[100, self.Ix.max(), self.Ix.max()]))
+        
         if show == True: print(f'Intensity equation of space:\nIo = {Io_x:.3f}\nIb = {Ib_x:.3f}\nD = {D:.3f}')
         
         # Display the results
